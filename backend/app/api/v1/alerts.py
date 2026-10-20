@@ -3,18 +3,29 @@ from fastapi import APIRouter, HTTPException
 from app.models.schemas import AlertResponse
 from app.services.weather_api import fetch_weather, WeatherServiceError
 
+_cache = {}
+
 router = APIRouter()
 
 @router.get("/alerts", response_model=AlertResponse)
 async def get_alerts(lat: float, lon: float):
+    # 1. Generar la clave (redondeada a 2 decimales) y obtener la hora actual
+    cache_key = f"{round(lat, 2)},{round(lon, 2)}"
+    now = datetime.now(timezone.utc)
+
+    if cache_key in _cache:
+        cached_time, cached_data = _cache[cache_key]
+        if (now - cached_time).total_seconds() < 600:
+            return cached_data
+
     try:
         clima = await fetch_weather(lat, lon)
     except WeatherServiceError as e:
         raise HTTPException(status_code=502, detail=str(e))
 
-    return {
+    response_data = {
         "location": {"lat": lat, "lon": lon},
-        "calculated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "calculated_at": now.isoformat().replace("+00:00", "Z"),
         "thermal": {
             "heat_index_c": 38.6,
             "risk_level": "alto",
@@ -33,3 +44,7 @@ async def get_alerts(lat: float, lon: float):
             "message": "Escorrentía peligrosa. Evita cruzar vías inundadas."
         }
     }
+
+    _cache[cache_key] = (now, response_data)
+
+    return response_data
