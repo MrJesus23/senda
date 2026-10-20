@@ -9,7 +9,6 @@ router = APIRouter()
 
 @router.get("/alerts", response_model=AlertResponse)
 async def get_alerts(lat: float, lon: float):
-    # 1. Generar la clave (redondeada a 2 decimales) y obtener la hora actual
     cache_key = f"{round(lat, 2)},{round(lon, 2)}"
     now = datetime.now(timezone.utc)
 
