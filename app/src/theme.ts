@@ -1,17 +1,21 @@
 export const theme = {
     colors: {
-        background: '#F5F7FA',
+        background: '#F3F6F9',
         surface: '#FFFFFF',
-        text: '#0F172A',
-        textMuted: '#64748B',
-        border: '#E2E8F0',
+        text: '#10202F',
+        textMuted: '#5B6B7B',
+        border: '#E8EDF2',
     },
-    // Cada nivel de riesgo tiene un color fuerte y uno suave (para fondos)
     risk: {
-        bajo: { main: '#16A34A', soft: '#DCFCE7', label: 'Riesgo bajo' },
-        medio: { main: '#D97706', soft: '#FEF3C7', label: 'Riesgo medio' },
-        alto: { main: '#DC2626', soft: '#FEE2E2', label: 'Riesgo alto' },
+        bajo: { main: '#2F9E6B', soft: '#DDF3E8', ink: '#124A33', label: 'Riesgo bajo' },
+        medio: { main: '#D9961A', soft: '#FCEFC9', ink: '#5C3F06', label: 'Riesgo medio' },
+        alto: { main: '#D64545', soft: '#FBE1DD', ink: '#5C1A17', label: 'Riesgo alto' },
     },
     spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 },
-    radius: { md: 12, lg: 20 },
+    radius: { md: 12, lg: 20, sheet: 28 },
+    font: {
+        regular: 'Manrope_400Regular',
+        semibold: 'Manrope_600SemiBold',
+        bold: 'Manrope_800ExtraBold',
+    },
 } as const;
