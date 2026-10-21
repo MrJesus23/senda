@@ -42,17 +42,22 @@ export function DashboardScreen() {
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const [slow, setSlow] = useState(false);
+
     const load = useCallback(
         async (isRefresh = false) => {
             if (!coords) return;
             if (isRefresh) setRefreshing(true);
             else setLoading(true);
             setError(null);
+            const slowTimer = setTimeout(() => setSlow(true), 6000);
             try {
                 setData(await getAlerts(coords.lat, coords.lon));
             } catch {
                 setError('No pudimos obtener las alertas. Revisa tu conexión e intenta de nuevo.');
             } finally {
+                clearTimeout(slowTimer);
+                setSlow(false);
                 setLoading(false);
                 setRefreshing(false);
             }
@@ -79,7 +84,16 @@ export function DashboardScreen() {
         return <CenteredMessage message="No pudimos obtener tu ubicación." onRetry={retry} />;
     }
     if (!data && loading) {
-        return <CenteredMessage loading message="Calculando alertas…" />;
+        return (
+            <CenteredMessage
+                loading
+                message={
+                    slow
+                        ? 'Despertando el servidor. La primera vez puede tardar hasta un minuto.'
+                        : 'Calculando alertas…'
+                }
+            />
+        );
     }
     if (!data) {
         return <CenteredMessage message={error ?? 'Sin datos por ahora.'} onRetry={() => load()} />;
