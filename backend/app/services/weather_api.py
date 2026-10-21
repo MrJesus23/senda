@@ -33,11 +33,13 @@ async def fetch_weather(lat: float, lon: float) -> dict:
     actual = resp_clima.json()["current"]
     calidad = resp_aire.json()["current"]
 
+    intervalo_s = float(actual.get("interval", 3600))
+    precip_mm = float(actual.get("precipitation", 0.0))
+
     return {
-        "temp_c": float(actual["temperature_2m"]),
-        "humidity": float(actual["relative_humidity_2m"]),
-        "wind_kmh": float(actual["wind_speed_10m"]),
-        # precipitation viene en mm acumulados en la última hora, equivale a mm/h.
-        "rain_mm_h": float(actual["precipitation"]),
-        "pm25": float(calidad["pm2_5"]),
+        "temp_c": float(actual.get("temperature_2m", 0.0)),
+        "humidity": float(actual.get("relative_humidity_2m", 0.0)),
+        "wind_kmh": float(actual.get("wind_speed_10m", 0.0)),
+        "rain_mm_h": precip_mm * 3600.0 / intervalo_s,
+        "pm25": float(calidad.get("pm2_5", 0.0)),
     }
