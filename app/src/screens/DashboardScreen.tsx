@@ -11,7 +11,7 @@ import { formatNumber } from '../utils/format';
 import { getOverallRisk } from '../utils/risk';
 
 export function DashboardScreen() {
-    const { status, coords, retry } = useLocation();
+    const { status, coords, canAskAgain, retry } = useLocation();
     const [data, setData] = useState<AlertsResponse | null>(null);
     const [refreshing, setRefreshing] = useState(false);
     const [slow, setSlow] = useState(false);
@@ -49,15 +49,19 @@ export function DashboardScreen() {
             <StateScreen
                 icon="location-outline"
                 title="Necesitamos tu ubicación"
-                body="SENDA calcula las alertas de la zona donde estás. Activa el permiso de ubicación para continuar."
-                primaryLabel="Permitir ubicación"
-                onPrimary={retry}
-                secondaryLabel="Abrir ajustes"
-                onSecondary={() => Linking.openSettings()}
+                body={
+                    canAskAgain
+                        ? 'SENDA calcula las alertas de la zona donde estás. Activa el permiso de ubicación para continuar.'
+                        : 'Para calcular las alertas de tu zona, activa la ubicación de SENDA en Ajustes y vuelve a la app.'
+                }
+                primaryLabel={canAskAgain ? 'Permitir ubicación' : 'Abrir ajustes'}
+                onPrimary={canAskAgain ? retry : () => Linking.openSettings()}
+                secondaryLabel={canAskAgain ? 'Abrir ajustes' : undefined}
+                onSecondary={canAskAgain ? () => Linking.openSettings() : undefined}
             />
         );
     }
-
+    
     if (status === 'error') {
         return (
             <StateScreen
