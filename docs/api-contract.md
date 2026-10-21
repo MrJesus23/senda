@@ -19,23 +19,23 @@ cambia, se avisa a todo el equipo antes de programarlo.
 ```json
 {
   "location": { "lat": 6.2442, "lon": -75.5812 },
-  "calculated_at": "2026-10-17T14:00:00Z",
+  "calculated_at": "2026-10-20T14:00:00Z",
   "thermal": {
-    "heat_index_c": 38.6,
-    "risk_level": "alto",
-    "message": "Riesgo de estrés térmico. Evita actividad física prolongada."
+    "heat_index_c": 37.1,
+    "risk_level": "medio",
+    "message": "Calor intenso. Hidrátate seguido y busca sombra si haces esfuerzo al aire libre."
   },
   "air_quality": {
-    "pm25_ugm3": 28.4,
-    "risk_level": "medio",
-    "message": "Calidad del aire moderada. Personas sensibles deben limitar el esfuerzo al aire libre."
+    "pm25_ugm3": 8.0,
+    "risk_level": "bajo",
+    "message": "Buena calidad del aire. Puedes hacer actividades al aire libre sin restricciones."
   },
   "hydrology": {
-    "rain_mm_h": 42.0,
-    "water_depth_cm": 6.5,
-    "drag_force_n": 310.2,
+    "rain_mm_h": 100.0,
+    "water_depth_cm": 14.16,
+    "drag_force_n": 367.7,
     "risk_level": "alto",
-    "message": "Escorrentía peligrosa. Evita cruzar vías inundadas."
+    "message": "Escorrentía peligrosa, puede arrastrarte. No cruces vías inundadas y busca un lugar alto."
   }
 }
 ```
@@ -62,6 +62,6 @@ cambia, se avisa a todo el equipo antes de programarlo.
 
 ## Reglas
 
-- Los números de los ejemplos son ilustrativos.
+- Los ejemplos salen de los casos de prueba TH-04, PA-02 y HD-07 de `docs/fisica.md` y respetan los umbrales de riesgo. Mensajes: `docs/mensajes.md`.
 - La app no hace cálculos físicos; solo muestra estos valores.
 - Los nombres de los campos van en `snake_case` tal como aparecen aquí.
