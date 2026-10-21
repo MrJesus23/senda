@@ -1,64 +1,35 @@
 import { useCallback, useEffect, useState } from 'react';
-import {
-    ActivityIndicator,
-    Button,
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
-} from 'react-native';
+import { Linking, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { AlertRow } from '../components/AlertRow';
-import { formatNumber } from '../utils/format';
+import { StateScreen } from '../components/StateScreen';
 import { StatusHero } from '../components/StatusHero';
 import { useLocation } from '../hooks/useLocation';
 import { getAlerts } from '../services/sendaApi';
 import { theme } from '../theme';
 import { AlertsResponse } from '../types/api';
+import { formatNumber } from '../utils/format';
 import { getOverallRisk } from '../utils/risk';
-
-function CenteredMessage({
-    message,
-    loading,
-    onRetry,
-}: {
-    message: string;
-    loading?: boolean;
-    onRetry?: () => void;
-}) {
-    return (
-        <View style={styles.center}>
-            {loading && <ActivityIndicator size="large" style={styles.spinner} />}
-            <Text style={styles.centerText}>{message}</Text>
-            {onRetry && <Button title="Reintentar" onPress={onRetry} />}
-        </View>
-    );
-}
 
 export function DashboardScreen() {
     const { status, coords, retry } = useLocation();
     const [data, setData] = useState<AlertsResponse | null>(null);
-    const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-
     const [slow, setSlow] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const load = useCallback(
         async (isRefresh = false) => {
             if (!coords) return;
             if (isRefresh) setRefreshing(true);
-            else setLoading(true);
             setError(null);
             const slowTimer = setTimeout(() => setSlow(true), 6000);
             try {
                 setData(await getAlerts(coords.lat, coords.lon));
             } catch {
-                setError('No pudimos obtener las alertas. Revisa tu conexión e intenta de nuevo.');
+                setError('No pudimos actualizar las alertas. Revisa tu conexión e inténtalo de nuevo.');
             } finally {
                 clearTimeout(slowTimer);
                 setSlow(false);
-                setLoading(false);
                 setRefreshing(false);
             }
         },
@@ -70,33 +41,55 @@ export function DashboardScreen() {
     }, [load]);
 
     if (status === 'loading') {
-        return <CenteredMessage loading message="Obteniendo tu ubicación…" />;
+        return <StateScreen loading title="Buscando tu ubicación" />;
     }
+
     if (status === 'denied') {
         return (
-            <CenteredMessage
-                message="Necesitamos tu ubicación para calcular las alertas de tu zona."
-                onRetry={retry}
+            <StateScreen
+                icon="location-outline"
+                title="Necesitamos tu ubicación"
+                body="SENDA calcula las alertas de la zona donde estás. Activa el permiso de ubicación para continuar."
+                primaryLabel="Permitir ubicación"
+                onPrimary={retry}
+                secondaryLabel="Abrir ajustes"
+                onSecondary={() => Linking.openSettings()}
             />
         );
     }
+
     if (status === 'error') {
-        return <CenteredMessage message="No pudimos obtener tu ubicación." onRetry={retry} />;
-    }
-    if (!data && loading) {
         return (
-            <CenteredMessage
-                loading
-                message={
-                    slow
-                        ? 'Despertando el servidor. La primera vez puede tardar hasta un minuto.'
-                        : 'Calculando alertas…'
-                }
+            <StateScreen
+                icon="navigate-outline"
+                title="No pudimos obtener tu ubicación"
+                body="Revisa que el GPS esté activado e inténtalo de nuevo."
+                primaryLabel="Reintentar"
+                onPrimary={retry}
             />
         );
     }
+
+    if (!data && error) {
+        return (
+            <StateScreen
+                icon="cloud-offline-outline"
+                title="No pudimos cargar las alertas"
+                body="Revisa tu conexión e inténtalo de nuevo."
+                primaryLabel="Reintentar"
+                onPrimary={() => load()}
+            />
+        );
+    }
+
     if (!data) {
-        return <CenteredMessage message={error ?? 'Sin datos por ahora.'} onRetry={() => load()} />;
+        return (
+            <StateScreen
+                loading
+                title={slow ? 'Despertando el servidor' : 'Calculando las alertas de tu zona'}
+                body={slow ? 'La primera vez puede tardar hasta un minuto.' : undefined}
+            />
+        );
     }
 
     const updatedAt = new Date(data.calculated_at).toLocaleTimeString('es-CO', {
@@ -170,25 +163,12 @@ const styles = StyleSheet.create({
         minHeight: 520,
     },
     errorBanner: {
+        fontFamily: theme.font.regular,
         backgroundColor: theme.risk.alto.soft,
         color: theme.risk.alto.ink,
         padding: theme.spacing.md,
         borderRadius: theme.radius.md,
-        marginBottom: theme.spacing.md,
+        marginTop: theme.spacing.md,
         fontSize: 14,
-    },
-    center: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: theme.spacing.lg,
-        backgroundColor: theme.colors.background,
-    },
-    spinner: { marginBottom: theme.spacing.md },
-    centerText: {
-        fontSize: 16,
-        color: theme.colors.text,
-        textAlign: 'center',
-        marginBottom: theme.spacing.md,
     },
 });
