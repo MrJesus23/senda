@@ -8,7 +8,8 @@ import {
     Text,
     View,
 } from 'react-native';
-import { AlertCard } from '../components/AlertCard';
+import { AlertRow } from '../components/AlertRow';
+import { formatNumber } from '../utils/format';
 import { StatusHero } from '../components/StatusHero';
 import { useLocation } from '../hooks/useLocation';
 import { getAlerts } from '../services/sendaApi';
@@ -105,33 +106,37 @@ export function DashboardScreen() {
             <View style={styles.sheet}>
                 {error && <Text style={styles.errorBanner}>{error}</Text>}
 
-                <AlertCard
-                    title="Confort térmico"
+                <AlertRow
+                    title="Sensación térmica"
+                    subtitle="Índice de calor"
                     icon="thermometer-outline"
-                    value={data.thermal.heat_index_c.toFixed(1)}
+                    value={formatNumber(data.thermal.heat_index_c, 1)}
                     unit="°C"
                     riskLevel={data.thermal.risk_level}
                     message={data.thermal.message}
                 />
-                <AlertCard
+                <AlertRow
                     title="Calidad del aire"
+                    subtitle="Partículas PM2.5"
                     icon="cloud-outline"
-                    value={data.air_quality.pm25_ugm3.toFixed(1)}
-                    unit="µg/m³ PM2.5"
+                    value={formatNumber(data.air_quality.pm25_ugm3, 1)}
+                    unit="µg/m³"
                     riskLevel={data.air_quality.risk_level}
                     message={data.air_quality.message}
                 />
-                <AlertCard
-                    title="Escorrentía"
-                    icon="water-outline"
-                    value={data.hydrology.rain_mm_h.toFixed(0)}
-                    unit="mm/h de lluvia"
+                <AlertRow
+                    title="Lluvia en las calles"
+                    subtitle="Escorrentía superficial"
+                    icon="rainy-outline"
+                    value={formatNumber(data.hydrology.rain_mm_h, 0)}
+                    unit="mm/h"
                     riskLevel={data.hydrology.risk_level}
                     message={data.hydrology.message}
                     details={[
-                        { label: 'Altura del agua', value: `${data.hydrology.water_depth_cm.toFixed(1)} cm` },
-                        { label: 'Fuerza de arrastre', value: `${data.hydrology.drag_force_n.toFixed(0)} N` },
+                        { label: 'Altura del agua', value: `${formatNumber(data.hydrology.water_depth_cm, 1)} cm` },
+                        { label: 'Fuerza de arrastre', value: `${formatNumber(data.hydrology.drag_force_n, 0)} N` },
                     ]}
+                    isLast
                 />
             </View>
         </ScrollView>
@@ -141,13 +146,14 @@ export function DashboardScreen() {
 const styles = StyleSheet.create({
     screen: { flex: 1, backgroundColor: theme.colors.background },
     sheet: {
-        backgroundColor: theme.colors.background,
+        backgroundColor: theme.colors.surface,
         borderTopLeftRadius: theme.radius.sheet,
         borderTopRightRadius: theme.radius.sheet,
         marginTop: -theme.radius.sheet,
-        padding: theme.spacing.lg,
+        paddingHorizontal: theme.spacing.lg,
+        paddingTop: theme.spacing.sm,
         paddingBottom: theme.spacing.xl,
-        minHeight: 480,
+        minHeight: 520,
     },
     errorBanner: {
         backgroundColor: theme.risk.alto.soft,
