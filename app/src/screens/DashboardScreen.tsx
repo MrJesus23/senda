@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     screen: { flex: 1, backgroundColor: theme.colors.background },
     content: { padding: theme.spacing.lg, paddingTop: 64, paddingBottom: theme.spacing.xl },
     brand: { fontSize: 13, fontWeight: '700', letterSpacing: 2, color: theme.colors.textMuted },
-    title: { fontSize: 28, fontWeight: '700', color: theme.colors.text, marginTop: 4 },
+    title: { fontSize: 28, fontFamily: theme.font.bold, color: theme.colors.text, marginTop: 4 },
     subtitle: { fontSize: 13, color: theme.colors.textMuted, marginTop: 4, marginBottom: theme.spacing.lg },
     errorBanner: {
         backgroundColor: theme.risk.alto.soft,
