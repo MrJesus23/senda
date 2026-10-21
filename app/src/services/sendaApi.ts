@@ -9,21 +9,21 @@ function buildMock(lat: number, lon: number): AlertsResponse {
         location: { lat, lon },
         calculated_at: new Date().toISOString(),
         thermal: {
-            heat_index_c: 37.1,
-            risk_level: 'medio',
-            message: 'Calor intenso. Hidrátate seguido y busca sombra si haces esfuerzo al aire libre.',
+            heat_index_c: 38.6,
+            risk_level: 'alto',
+            message: 'Riesgo de estrés térmico. Evita actividad física prolongada.',
         },
         air_quality: {
-            pm25_ugm3: 8.0,
-            risk_level: 'bajo',
-            message: 'Buena calidad del aire. Puedes hacer actividades al aire libre sin restricciones.',
+            pm25_ugm3: 28.4,
+            risk_level: 'medio',
+            message: 'Calidad del aire moderada. Personas sensibles deben limitar el esfuerzo al aire libre.',
         },
         hydrology: {
-            rain_mm_h: 100.0,
-            water_depth_cm: 14.16,
-            drag_force_n: 367.7,
+            rain_mm_h: 42.0,
+            water_depth_cm: 6.5,
+            drag_force_n: 310.2,
             risk_level: 'alto',
-            message: 'Escorrentía peligrosa, puede arrastrarte. No cruces vías inundadas y busca un lugar alto.',
+            message: 'Escorrentía peligrosa. Evita cruzar vías inundadas.',
         },
     };
 }
