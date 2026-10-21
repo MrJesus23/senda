@@ -9,10 +9,12 @@ import {
     View,
 } from 'react-native';
 import { AlertCard } from '../components/AlertCard';
+import { StatusHero } from '../components/StatusHero';
 import { useLocation } from '../hooks/useLocation';
 import { getAlerts } from '../services/sendaApi';
 import { theme } from '../theme';
 import { AlertsResponse } from '../types/api';
+import { getOverallRisk } from '../utils/risk';
 
 function CenteredMessage({
     message,
@@ -86,60 +88,70 @@ export function DashboardScreen() {
         hour: '2-digit',
         minute: '2-digit',
     });
+    const overall = getOverallRisk(data);
 
     return (
         <ScrollView
             style={styles.screen}
-            contentContainerStyle={styles.content}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} />}
         >
-            <Text style={styles.brand}>SENDA</Text>
-            <Text style={styles.title}>Alertas de tu zona</Text>
-            <Text style={styles.subtitle}>Actualizado a las {updatedAt} · Desliza hacia abajo para refrescar</Text>
+            <StatusHero
+                level={overall.level}
+                message={overall.message}
+                updatedAt={updatedAt}
+                onRefresh={() => load(true)}
+            />
 
-            {error && <Text style={styles.errorBanner}>{error}</Text>}
+            <View style={styles.sheet}>
+                {error && <Text style={styles.errorBanner}>{error}</Text>}
 
-            <AlertCard
-                title="Confort térmico"
-                icon="thermometer-outline"
-                value={data.thermal.heat_index_c.toFixed(1)}
-                unit="°C"
-                riskLevel={data.thermal.risk_level}
-                message={data.thermal.message}
-            />
-            <AlertCard
-                title="Calidad del aire"
-                icon="cloud-outline"
-                value={data.air_quality.pm25_ugm3.toFixed(1)}
-                unit="µg/m³ PM2.5"
-                riskLevel={data.air_quality.risk_level}
-                message={data.air_quality.message}
-            />
-            <AlertCard
-                title="Escorrentía"
-                icon="water-outline"
-                value={data.hydrology.rain_mm_h.toFixed(0)}
-                unit="mm/h de lluvia"
-                riskLevel={data.hydrology.risk_level}
-                message={data.hydrology.message}
-                details={[
-                    { label: 'Altura del agua', value: `${data.hydrology.water_depth_cm.toFixed(1)} cm` },
-                    { label: 'Fuerza de arrastre', value: `${data.hydrology.drag_force_n.toFixed(0)} N` },
-                ]}
-            />
+                <AlertCard
+                    title="Confort térmico"
+                    icon="thermometer-outline"
+                    value={data.thermal.heat_index_c.toFixed(1)}
+                    unit="°C"
+                    riskLevel={data.thermal.risk_level}
+                    message={data.thermal.message}
+                />
+                <AlertCard
+                    title="Calidad del aire"
+                    icon="cloud-outline"
+                    value={data.air_quality.pm25_ugm3.toFixed(1)}
+                    unit="µg/m³ PM2.5"
+                    riskLevel={data.air_quality.risk_level}
+                    message={data.air_quality.message}
+                />
+                <AlertCard
+                    title="Escorrentía"
+                    icon="water-outline"
+                    value={data.hydrology.rain_mm_h.toFixed(0)}
+                    unit="mm/h de lluvia"
+                    riskLevel={data.hydrology.risk_level}
+                    message={data.hydrology.message}
+                    details={[
+                        { label: 'Altura del agua', value: `${data.hydrology.water_depth_cm.toFixed(1)} cm` },
+                        { label: 'Fuerza de arrastre', value: `${data.hydrology.drag_force_n.toFixed(0)} N` },
+                    ]}
+                />
+            </View>
         </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     screen: { flex: 1, backgroundColor: theme.colors.background },
-    content: { padding: theme.spacing.lg, paddingTop: 64, paddingBottom: theme.spacing.xl },
-    brand: { fontSize: 13, fontWeight: '700', letterSpacing: 2, color: theme.colors.textMuted },
-    title: { fontSize: 28, fontFamily: theme.font.bold, color: theme.colors.text, marginTop: 4 },
-    subtitle: { fontSize: 13, color: theme.colors.textMuted, marginTop: 4, marginBottom: theme.spacing.lg },
+    sheet: {
+        backgroundColor: theme.colors.background,
+        borderTopLeftRadius: theme.radius.sheet,
+        borderTopRightRadius: theme.radius.sheet,
+        marginTop: -theme.radius.sheet,
+        padding: theme.spacing.lg,
+        paddingBottom: theme.spacing.xl,
+        minHeight: 480,
+    },
     errorBanner: {
         backgroundColor: theme.risk.alto.soft,
-        color: theme.risk.alto.main,
+        color: theme.risk.alto.ink,
         padding: theme.spacing.md,
         borderRadius: theme.radius.md,
         marginBottom: theme.spacing.md,
