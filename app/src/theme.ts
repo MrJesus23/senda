@@ -5,6 +5,7 @@ export const theme = {
         text: '#10202F',
         textMuted: '#5B6B7B',
         border: '#E8EDF2',
+        track: '#E4E9EE',
     },
     risk: {
         bajo: { main: '#2F9E6B', soft: '#DDF3E8', ink: '#124A33', label: 'Riesgo bajo' },

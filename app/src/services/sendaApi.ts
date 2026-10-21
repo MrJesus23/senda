@@ -10,12 +10,12 @@ function buildMock(lat: number, lon: number): AlertsResponse {
         calculated_at: new Date().toISOString(),
         thermal: {
             heat_index_c: 38.6,
-            risk_level: 'alto',
+            risk_level: 'medio',
             message: 'Riesgo de estrés térmico. Evita actividad física prolongada.',
         },
         air_quality: {
             pm25_ugm3: 28.4,
-            risk_level: 'medio',
+            risk_level: 'bajo',
             message: 'Calidad del aire moderada. Personas sensibles deben limitar el esfuerzo al aire libre.',
         },
         hydrology: {
